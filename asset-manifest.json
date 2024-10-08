@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/nba-standings-predictor/static/css/main.e6c13ad2.css",
+    "main.js": "/nba-standings-predictor/static/js/main.470f3ae5.js",
+    "static/js/453.18aea354.chunk.js": "/nba-standings-predictor/static/js/453.18aea354.chunk.js",
+    "index.html": "/nba-standings-predictor/index.html",
+    "main.e6c13ad2.css.map": "/nba-standings-predictor/static/css/main.e6c13ad2.css.map",
+    "main.470f3ae5.js.map": "/nba-standings-predictor/static/js/main.470f3ae5.js.map",
+    "453.18aea354.chunk.js.map": "/nba-standings-predictor/static/js/453.18aea354.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.470f3ae5.js"
+  ]
+}
