@@ -1,72 +1,67 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 const teams = [
-    "ATL", "BOS", "BKN", "CHA", "CHI", "CLE", "DAL", "DEN", "GSW", "HOU", "IND", "LAC", "LAL", "MEM", "MIA", "MIL", "MIN", "NOP", "NYK", "OKC", "ORL", "PHI", "PHX", "POR", "SAC", "SAS", "TOR", "UTA", "WAS"
+    "ATL", "BOS", "BKN", "CHA", "CHI", "CLE", "DAL", "DEN", "GSW",
+    "HOU", "IND", "LAC", "LAL", "MEM", "MIA", "MIL", "MIN", "NOP",
+    "NYK", "OKC", "ORL", "PHI", "PHX", "POR", "SAC", "SAS", "TOR",
+    "UTA", "WAS"
 ];
 
-// Last year's standings (example data)
-const lastYearStandings = {
-    ATL: 36,
-    BOS: 64,
-    BKN: 32,
-    CHA: 21,
-    CHI: 39,
-    CLE: 48,
-    DET: 14,
-    IND: 47,
-    MIA: 46,
-    MIL: 49,
-    NYK: 50,
-    ORL: 47,
-    PHI: 47,
-    TOR: 25,
-    WAS: 15,
-    DAL: 50,
-    DEN: 57,
-    GSW: 46,
-    HOU: 41,
-    LAC: 51,
-    LAL: 47,
-    MEM: 27,
-    MIN: 56,
-    NOP: 49,
-    OKC: 57,
-    PHX: 49,
-    POR: 21,
-    SAC: 46,
-    SAS: 22,
-    UTA: 31
-};
-
-const PredictionForm = ({ onSubmit, records }) => {
-    const [inputValues, setInputValues] = useState(records);
-
-    useEffect(() => {
-        setInputValues(records); // Set input values from records when component mounts
-    }, [records]);
+const PredictionForm = ({ onSubmit, records, onRecordsChange }) => {
 
     const handleChange = (team, value) => {
-        const updatedValues = { ...inputValues, [team]: value };
-        setInputValues(updatedValues);
+        onRecordsChange(team, value); // Update individual team record
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit(inputValues);
+        onSubmit(records); // Submit the current records
     };
 
-    // Autofill 41 wins for all teams
+    // Autofill all teams with 41 wins
     const autofill41Wins = () => {
         const newRecords = {};
         teams.forEach(team => {
-            newRecords[team] = 41; // Set 41 wins for each team
+            newRecords[team] = 41; // Set 41 wins for every team
         });
-        setInputValues(newRecords);
+        onRecordsChange(null, newRecords); // Update all records at once
     };
 
     // Autofill with last year's standings
     const autofillLastYearStandings = () => {
-        setInputValues(lastYearStandings);
+        const lastYearStandings = {
+            ATL: 36,
+            BOS: 64,
+            BKN: 32,
+            CHA: 21,
+            CHI: 39,
+            CLE: 48,
+            DET: 14,
+            IND: 47,
+            MIA: 46,
+            MIL: 49,
+            NYK: 50,
+            ORL: 47,
+            PHI: 47,
+            TOR: 25,
+            WAS: 15,
+            DAL: 50,
+            DEN: 57,
+            GSW: 46,
+            HOU: 41,
+            LAC: 51,
+            LAL: 47,
+            MEM: 27,
+            MIN: 56,
+            NOP: 49,
+            OKC: 57,
+            PHX: 49,
+            POR: 21,
+            SAC: 46,
+            SAS: 22,
+            UTA: 31
+        };
+        onRecordsChange(null, lastYearStandings); // Update all records with last year's standings
     };
 
     return (
@@ -76,11 +71,11 @@ const PredictionForm = ({ onSubmit, records }) => {
                     <label>{team}: </label>
                     <input
                         type="number"
-                        value={inputValues[team] || ''}
-                        onChange={(e) => handleChange(team, e.target.value)}
+                        value={records[team] || ''} // Controlled input value
+                        onChange={(e) => handleChange(team, e.target.value)} // Update value via handleChange
                         required
-                        min="0" // Minimum value
-                        max="82" // Maximum value
+                        min="0" 
+                        max="82" 
                     />
                 </div>
             ))}
@@ -92,4 +87,3 @@ const PredictionForm = ({ onSubmit, records }) => {
 };
 
 export default PredictionForm;
-
