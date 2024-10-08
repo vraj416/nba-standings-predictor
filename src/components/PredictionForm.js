@@ -92,3 +92,4 @@ const PredictionForm = ({ onSubmit, records }) => {
 };
 
 export default PredictionForm;
+
