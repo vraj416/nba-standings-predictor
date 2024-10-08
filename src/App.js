@@ -1,25 +1,82 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import PredictionForm from './components/PredictionForm';
+import StandingsDisplay from './components/StandingsDisplay';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => {
+    const [standings, setStandings] = useState(() => {
+        // Retrieve standings from local storage
+        const savedStandings = localStorage.getItem('standings');
+        return savedStandings ? JSON.parse(savedStandings) : null;
+    });
+
+    const [records, setRecords] = useState(() => {
+        // Retrieve input values from local storage
+        const savedRecords = localStorage.getItem('records');
+        return savedRecords ? JSON.parse(savedRecords) : {};
+    });
+
+    const handlePredictionSubmit = (newRecords) => {
+        if (validateStandings(newRecords)) {
+            setStandings(newRecords);
+            // Save standings and input values to local storage
+            localStorage.setItem('standings', JSON.stringify(newRecords));
+            localStorage.setItem('records', JSON.stringify(newRecords)); // Save input values
+            alert('Predictions are valid!');
+        } else {
+            alert('Invalid predictions! Please check the totals.');
+        }
+    };
+
+    const validateStandings = (records) => {
+      const totalGames = 82; // NBA season length
+      const totalTeams = 30;
+      const totalLeagueGames = (totalGames * totalTeams) / 2; // Total number of games in the season (each game counts for both teams)
+  
+      // Sum of all wins across the league
+      const totalWins = Object.values(records).reduce((a, b) => a + Number(b), 0);
+  
+      // Validate the overall win/loss balance
+      if (totalWins !== totalLeagueGames) {
+        console.log(`${totalWins}`);
+        console.log(`${totalLeagueGames}`);
+        return false; // Total wins must match total games played in the league
+      }
+  
+      // Check if any team's wins exceed 82 or are less than 0
+      for (const wins of Object.values(records)) {
+        const winCount = Number(wins);
+        if (winCount < 0 || winCount > 82) {
+          return false; // Invalid if any team has less than 0 or more than 82 wins
+        }
+      }
+  
+      // Splitting teams into conferences
+      const easternTeams = ["ATL", "BOS", "BKN", "CHA", "CHI", "CLE", "DET", "IND", "MIA", "MIL", "NYK", "ORL", "PHI", "TOR", "WAS"];
+      const westernTeams = ["DAL", "DEN", "GSW", "HOU", "LAC", "LAL", "MEM", "MIN", "NOP", "OKC", "PHX", "POR", "SAC", "SAS", "UTA"];
+  
+      // Wins in each conference
+      const easternWins = easternTeams.reduce((sum, team) => sum + Number(records[team] || 0), 0);
+      const westernWins = westernTeams.reduce((sum, team) => sum + Number(records[team] || 0), 0);
+  
+      const totalEasternGames = 52 * easternTeams.length; // 52 games per team in the conference
+      const totalWesternGames = 52 * westernTeams.length; // Same for the West
+  
+      // Validate that wins make sense in the context of their respective conference schedules
+      if (easternWins > totalEasternGames || westernWins > totalWesternGames) {
+        return false; // Invalid if wins exceed the total games played within their respective conferences
+      }
+  
+      // If all checks pass
+      return true;
+    };
+
+    return (
+        <div>
+            <h1>NBA Standings Predictions for 2024-25</h1>
+            <PredictionForm onSubmit={handlePredictionSubmit} records={records} />
+            {standings && <StandingsDisplay standings={standings} />}
+        </div>
+    );
+};
 
 export default App;
